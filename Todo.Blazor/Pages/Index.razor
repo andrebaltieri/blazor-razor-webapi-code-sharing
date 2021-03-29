@@ -1,0 +1,97 @@
+﻿@page "/"
+@inject MarkAsDoneHandler handler
+@inject ITodoRepository repository
+<h3>My tasks</h3>
+
+@if (items == null)
+{
+    <p>
+        <em>Carregando...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="text-center">Item</th>
+            <th class="text-center">#</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in items)
+        {
+            <tr>
+                <td>
+                    @item.Title <br>
+                    <small>@item.CreateDate.ToShortDateString()</small>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-primary" @onclick="@(e => MarkAsDone(item.Id))">
+                        <span class="oi oi-check"></span>
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+
+<h3>Done</h3>
+@if (items == null)
+{
+    <p>
+        <em>Carregando...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="text-center">Item</th>
+            <th class="text-center">#</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in doneItems)
+        {
+            <tr>
+                <td>
+                    @item.Title <br>
+                    <small>@item.CreateDate.ToShortDateString()</small>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-primary" @onclick="@(e => MarkAsDone(item.Id))">
+                        <span class="oi oi-check"></span>
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private IEnumerable<TodoItem> items;
+    private IEnumerable<TodoItem> doneItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await repository.GetToDoAsync();
+        doneItems = await repository.GetDoneAsync();
+    }
+
+    private async void MarkAsDone(int id)
+    {
+        await handler.HandleAsync(new MarkAsDoneRequest
+        {
+            Id = id
+        });
+        items = await repository.GetToDoAsync();
+        doneItems = await repository.GetDoneAsync();
+    }
+
+}

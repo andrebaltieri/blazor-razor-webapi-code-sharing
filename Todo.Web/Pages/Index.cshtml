@@ -1,0 +1,15 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<h1 class="display-4">Tarefas</h1>
+<ul class="nav nav-pills flex-column">
+    @foreach (var item in Model.Todos)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="#">@item.Title</a>
+        </li>
+    }
+</ul>
